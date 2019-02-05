@@ -1,0 +1,50 @@
+#Loading the Data
+train=read.csv(file.choose())#,na.strings=c(""))#loandata file
+dim(train)
+names(train)
+head(train)
+str(train)
+
+test = read.csv(file.choose())
+names(test)
+
+train$Survived=factor(train$Survived,levels=c(0,1),labels=c("No","Yes"))
+summary(train)
+
+#Dividing the data
+set.seed(222)
+d = sort(sample(nrow(train), nrow(train)*.7))
+train_train<-train[d,]
+train_test<-train[-d,]
+dim(train_train)
+dim(train_test)
+
+
+#Testing accuracy
+set.seed(222)
+d = sort(sample(nrow(train), nrow(train)*.7))
+train_train<-train[d,]
+train_test<-train[-d,]
+dim(train_train)
+dim(train_test)
+library(e1071)
+model.naiveBayes <- naiveBayes(Survived ~ ., data = train_train, laplace = 5)
+pred.naiveBayes <- predict(model.naiveBayes, train_test,type="class")
+head(pred.naiveBayes)
+
+#Performance Matrix for Naive Bayes
+conf.matrix = table(train_test$Survived,pred.naiveBayes)
+rownames(conf.matrix) <- paste("Actual", rownames(conf.matrix), sep = ":")
+colnames(conf.matrix) <- paste("Pred", colnames(conf.matrix), sep = ":")
+print(conf.matrix)
+
+#Error
+1-(sum(diag(conf.matrix))/sum(conf.matrix))
+#Accuracy
+(sum(diag(conf.matrix))/sum(conf.matrix))
+#Naive Bayes from the built model
+library(e1071)
+model.naiveBayes <- naiveBayes(Survived ~ ., data = train, laplace = 5)
+pred.naiveBayes <- predict(model.naiveBayes,test,type="class")
+head(pred.naiveBayes)
+
